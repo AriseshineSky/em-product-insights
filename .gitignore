@@ -30,6 +30,9 @@
 
 /public/assets
 
+# Rails master key — decrypts config/credentials.yml.enc, never commit
+/config/master.key
+
 /app/assets/builds/*
 !/app/assets/builds/.keep
 

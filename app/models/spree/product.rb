@@ -1,2 +1,4 @@
-class Spree::Product < ApplicationRecord
+module Spree
+  class Product < Record
+  end
 end
