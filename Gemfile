@@ -42,7 +42,7 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 # Google Merchant API client and service account auth
-gem "google-apis-merchantapi_products_v1beta"
+# (products v1beta was discontinued on 2026-02-28; must use the GA client)
 gem "googleauth"
 
 group :development, :test do
@@ -70,3 +70,5 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "google-shopping-merchant-products-v1", "~> 0.9.0"

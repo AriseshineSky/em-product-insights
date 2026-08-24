@@ -1,6 +1,6 @@
 module GoogleMerchant
   class ProductService
-    Api = Google::Apis::MerchantapiProductsV1beta
+    V1 = Google::Shopping::Merchant::Products::V1
 
     attr_reader :config, :client
 
@@ -15,16 +15,15 @@ module GoogleMerchant
       page_token = nil
       loop do
         response = client.list_products(page_size: page_size, page_token: page_token)
-        response.products&.each { |product| yield product }
+        response.products.each { |product| yield product }
         page_token = response.next_page_token
         break if page_token.to_s.empty?
       end
     end
 
-    def find_product(name: nil, offer_id: nil, channel: config.channel,
-                     content_language: config.content_language, feed_label: config.feed_label)
-      name ||= product_name(offer_id,
-                            channel: channel, content_language: content_language, feed_label: feed_label)
+    def find_product(name: nil, offer_id: nil, content_language: config.content_language,
+                     feed_label: config.feed_label)
+      name ||= product_name(offer_id, content_language: content_language, feed_label: feed_label)
       client.get_product(name)
     end
 
@@ -37,13 +36,12 @@ module GoogleMerchant
       matches
     end
 
-    def insert(offer_id:, attributes:, channel: config.channel,
-               content_language: config.content_language, feed_label: config.feed_label,
-               data_source: config.data_source)
+    def insert(offer_id:, attributes:, content_language: config.content_language,
+               feed_label: config.feed_label, data_source: config.data_source)
       config.require_data_source!
       input = build_product_input(
         offer_id: offer_id, attributes: attributes,
-        channel: channel, content_language: content_language, feed_label: feed_label
+        content_language: content_language, feed_label: feed_label
       )
       client.insert_product(config.accounts_root, input, data_source: normalize_data_source(data_source))
     end
@@ -52,8 +50,7 @@ module GoogleMerchant
       config.require_data_source!
       input = build_product_input(name: name, attributes: attributes)
       client.update_product(
-        name, input,
-        data_source: normalize_data_source(data_source), update_mask: update_mask
+        input, data_source: normalize_data_source(data_source), update_mask: update_mask
       )
     end
 
@@ -66,31 +63,31 @@ module GoogleMerchant
     end
 
     def build_product_input(offer_id: nil, name: nil, attributes: {},
-                            channel: config.channel, content_language: config.content_language,
+                            content_language: config.content_language,
                             feed_label: config.feed_label)
-      Api::ProductInput.new(
+      V1::ProductInput.new(
         name: name || product_input_name(offer_id,
                                          content_language: content_language,
                                          feed_label: feed_label),
         offer_id: offer_id,
-        channel: channel,
         content_language: content_language,
         feed_label: feed_label,
-        attributes: build_attributes(attributes)
+        product_attributes: build_attributes(attributes)
       )
     end
 
     def build_attributes(hash)
-      Api::Attributes.new(**hash) if hash
+      V1::ProductAttributes.new(**hash) if hash
     end
 
     def price(amount, currency:)
-      Api::Price.new(amount_micros: (amount * 1_000_000).to_i, currency_code: currency)
+      Google::Shopping::Type::Price.new(amount_micros: (amount * 1_000_000).to_i,
+                                        currency_code: currency)
     end
 
-    def product_name(offer_id, channel: config.channel, content_language: config.content_language,
+    def product_name(offer_id, content_language: config.content_language,
                      feed_label: config.feed_label)
-      "#{config.accounts_root}/products/#{channel}~#{content_language}~#{feed_label}~#{offer_id}"
+      "#{config.accounts_root}/products/#{content_language}~#{feed_label}~#{offer_id}"
     end
 
     def product_input_name(offer_id, content_language: config.content_language,

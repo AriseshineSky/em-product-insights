@@ -9,6 +9,11 @@ default: &default
   timeout: 5000
 
 development:
+  primary:
+    <<: *default
+    adapter: postgresql
+    encoding: unicode
+    url: <%= ENV.fetch('DATABASE_URL') %>
   spree:
     <<: *default
     adapter: mysql2
