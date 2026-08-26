@@ -72,3 +72,5 @@ group :test do
 end
 
 gem "google-shopping-merchant-products-v1", "~> 0.9.0"
+
+gem "packwerk", "~> 3.3"

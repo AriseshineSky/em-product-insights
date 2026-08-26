@@ -1,5 +1,5 @@
-module GoogleMerchant
-  class CypStatusReport
+module ProductAudit
+  class MerchantStatusReport
     DEFAULT_SOURCE = "Cyp".freeze
 
     Result = Struct.new(:source, :total, :found, :not_found, :errors, :db_errors,
@@ -9,11 +9,13 @@ module GoogleMerchant
       end
     end
 
-    attr_reader :source, :product_service
+    attr_reader :source, :merchant_service
 
-    def initialize(source: DEFAULT_SOURCE, product_service: ProductService.new)
+    # @param merchant_service [#find_product] the merchant integration adapter
+    def initialize(source: DEFAULT_SOURCE,
+                   merchant_service: GoogleMerchant::ProductService.new)
       @source = source
-      @product_service = product_service
+      @merchant_service = merchant_service
     end
 
     def run(limit: nil)
@@ -50,11 +52,11 @@ module GoogleMerchant
     def check_product(product_source)
       [ product_source.handle, product_source.source_product_id ].compact.each do |offer_id|
         begin
-          product = product_service.find_product(offer_id: offer_id)
+          product = merchant_service.find_product(offer_id: offer_id)
           return found_result(offer_id, product)
-        rescue NotFoundError
+        rescue GoogleMerchant::NotFoundError
           next
-        rescue Error => e
+        rescue GoogleMerchant::Error => e
           return { state: "error", offer_id: offer_id, error_message: e.message }
         end
       end

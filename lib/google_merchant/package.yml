@@ -1,0 +1,8 @@
+# Generic Google Merchant API integration adapter.
+# Must stay source-agnostic: no product-sourcing domain concerns live here.
+# ".": depends on the shared root package (framework, namespace root).
+
+enforce_dependencies: true
+
+dependencies:
+  - "."

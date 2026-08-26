@@ -1,0 +1,5 @@
+# Root package: app/, config/, lib/tasks/ and top-level lib roots.
+# Root is the shared layer the bounded contexts build on, so it does not
+# enforce dependencies (would invert the dependency graph).
+
+enforce_dependencies: false

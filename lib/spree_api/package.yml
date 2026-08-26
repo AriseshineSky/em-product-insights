@@ -1,0 +1,8 @@
+# Spree storefront HTTP API integration adapter (token-based v1).
+# Must stay source-agnostic: no product-sourcing domain concerns live here.
+# ".": depends on the shared root package (stdlib, namespace root).
+
+enforce_dependencies: true
+
+dependencies:
+  - "."
