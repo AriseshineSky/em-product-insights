@@ -1,4 +1,4 @@
-<%= render Shadcn::CardComponent.new do |card| %>
+<%= render Shadcn::CardComponent.new(class: "h-full") do |card| %>
   <% card.with_header do %>
     <% card.with_title { "Integrations" } %>
     <% card.with_description { "API connection status" } %>
@@ -8,7 +8,7 @@
       <% integrations.each do |integration| %>
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="inline-block w-2 h-2 rounded-full <%= integration[:configured] ? 'bg-green-500' : 'bg-gray-400' %>"></span>
+            <span class="inline-block h-2 w-2 rounded-full <%= integration[:configured] ? 'bg-green-500' : 'bg-gray-400' %>"></span>
             <span class="text-sm font-medium"><%= integration[:name] %></span>
           </div>
           <%= render Shadcn::BadgeComponent.new(variant: integration[:configured] ? :default : :secondary) do %>

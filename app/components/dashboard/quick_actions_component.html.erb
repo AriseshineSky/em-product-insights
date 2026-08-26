@@ -1,12 +1,13 @@
-<%= render Shadcn::CardComponent.new do |card| %>
+<%= render Shadcn::CardComponent.new(class: "h-full") do |card| %>
   <% card.with_header do %>
     <% card.with_title { "Quick Actions" } %>
+    <% card.with_description { "Common product operations" } %>
   <% end %>
   <% card.with_content do %>
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-col gap-2">
       <% actions.each do |action| %>
         <%= link_to action[:label], action[:path],
-            class: "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 #{action[:variant] == :default ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'border border-input bg-background hover:bg-accent hover:text-accent-foreground'} h-9 px-4 py-2" %>
+            class: button_classes(action[:variant] || :outline) %>
       <% end %>
     </div>
   <% end %>

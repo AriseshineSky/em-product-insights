@@ -1,37 +1,32 @@
+<% content_for :page_title, "Products" %>
+
 <div class="space-y-6">
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-3xl font-bold tracking-tight">Merchant Product Status</h1>
-      <p class="text-muted-foreground">Cyp source products checked against Google Merchant.</p>
-    </div>
-    <%= link_to "Back to Dashboard", root_path,
-        class: "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2" %>
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight">Merchant Product Status</h1>
+    <p class="text-sm text-muted-foreground">Cyp source products checked against Google Merchant (<%= number_with_delimiter(@products.count) %> showing).</p>
   </div>
 
   <%= render Shadcn::CardComponent.new do |card| %>
-    <% card.with_header do %>
-      <% card.with_title { "Products (#{number_with_delimiter(@products.count)} showing)" } %>
-    <% end %>
     <% card.with_content do %>
-      <div class="rounded-md border">
+      <div class="overflow-hidden rounded-md border">
         <table class="w-full caption-bottom text-sm">
           <thead class="[&_tr]:border-b">
-            <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Product ID</th>
-              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Offer ID</th>
-              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Handle</th>
-              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">State</th>
-              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Availability</th>
-              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Checked</th>
+            <tr class="border-b bg-muted/50">
+              <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Product ID</th>
+              <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Offer ID</th>
+              <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground hidden md:table-cell">Handle</th>
+              <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">State</th>
+              <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground hidden lg:table-cell">Availability</th>
+              <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Checked</th>
             </tr>
           </thead>
           <tbody class="[&_tr:last-child]:border-0">
             <% @products.each do |product| %>
-              <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                <td class="p-4 align-middle font-medium"><%= product.product_id.to_s %></td>
-                <td class="p-4 align-middle"><%= product.offer_id.to_s %></td>
-                <td class="p-4 align-middle"><%= product.handle.to_s %></td>
-                <td class="p-4 align-middle">
+              <tr class="border-b transition-colors hover:bg-muted/50">
+                <td class="p-3.5 align-middle font-medium"><%= product.product_id.to_s %></td>
+                <td class="p-3.5 align-middle text-muted-foreground"><%= product.offer_id.to_s %></td>
+                <td class="p-3.5 align-middle text-muted-foreground hidden md:table-cell"><%= product.handle.to_s %></td>
+                <td class="p-3.5 align-middle">
                   <%= case product.state
                       when "found"
                         render Shadcn::BadgeComponent.new(variant: :default) { "Found" }
@@ -41,8 +36,8 @@
                         render Shadcn::BadgeComponent.new(variant: :secondary) { "Error" }
                       end %>
                 </td>
-                <td class="p-4 align-middle"><%= product.availability.to_s %></td>
-                <td class="p-4 align-middle text-muted-foreground"><%= product.checked_at&.strftime("%b %d %H:%M") %></td>
+                <td class="p-3.5 align-middle text-muted-foreground hidden lg:table-cell"><%= product.availability.to_s %></td>
+                <td class="p-3.5 align-middle text-right text-muted-foreground"><%= product.checked_at&.strftime("%b %d %H:%M") %></td>
               </tr>
             <% end %>
           </tbody>

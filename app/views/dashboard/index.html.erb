@@ -1,15 +1,12 @@
+<% content_for :page_title, "Overview" %>
+
 <div class="space-y-6">
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-3xl font-bold tracking-tight">Product Insights</h1>
-      <p class="text-muted-foreground">Monitor merchant product status, BigQuery issues, and integration health.</p>
-    </div>
-    <div class="text-sm text-muted-foreground">
-      <%= Date.today.strftime("%B %d, %Y") %>
-    </div>
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight">Overview</h1>
+    <p class="text-sm text-muted-foreground">Merchant product status, integrations and recent activity.</p>
   </div>
 
-  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
     <%= render Dashboard::MetricCardComponent.new(
       title: "Cyp Products",
       description: "Total sourced",
@@ -18,7 +15,7 @@
 
     <%= render Dashboard::MetricCardComponent.new(
       title: "Checked",
-      description: "Status checks",
+      description: "Status checks completed",
       value: number_with_delimiter(@total_checked)
     ) %>
 
@@ -35,18 +32,32 @@
     ) %>
   </div>
 
-  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-    <%= render Dashboard::MerchantStatusComponent.new(
-      stats: @merchant_stats,
-      total: @total_checked
-    ) %>
+  <div class="grid gap-6 lg:grid-cols-3">
+    <div class="lg:col-span-1">
+      <%= render Dashboard::MerchantStatusComponent.new(
+        stats: @merchant_stats,
+        total: @total_checked
+      ) %>
+    </div>
 
-    <%= render Dashboard::IntegrationStatusComponent.new(
-      integrations: Dashboard::IntegrationStatusComponent.default_integrations
-    ) %>
+    <div class="lg:col-span-2">
+      <%= render Dashboard::RecentProductsComponent.new(products: @recent_products) %>
+    </div>
+  </div>
 
-    <%= render Dashboard::QuickActionsComponent.new(
-      actions: Dashboard::QuickActionsComponent.default_actions
-    ) %>
+  <div class="grid gap-6 lg:grid-cols-3">
+    <div class="lg:col-span-1">
+      <%= render Dashboard::IntegrationStatusComponent.new(
+        integrations: Dashboard::IntegrationStatusComponent.default_integrations
+      ) %>
+    </div>
+
+    <div class="lg:col-span-2">
+      <%= render Dashboard::QuickActionsComponent.new(actions: [
+        { path: products_path, label: "View Products", variant: :primary },
+        { path: root_path, label: "Merchant Issues (BigQuery)", variant: :outline },
+        { path: root_path, label: "Spree API Commands", variant: :outline }
+      ]) %>
+    </div>
   </div>
 </div>

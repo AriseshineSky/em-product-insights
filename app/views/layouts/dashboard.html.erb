@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title><%= content_for(:title) || "Em Product Insights" %></title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  </head>
+  <body class="bg-muted/40 min-h-screen antialiased">
+    <%= render "layouts/sidebar" %>
+    <div class="pl-0 lg:pl-64">
+      <%= render "layouts/header" %>
+      <main class="p-6 md:p-8">
+        <div class="mx-auto max-w-7xl space-y-6">
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

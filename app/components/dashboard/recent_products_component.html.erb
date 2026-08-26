@@ -1,0 +1,44 @@
+<%= render Shadcn::CardComponent.new(class: "h-full") do |card| %>
+  <% card.with_header do %>
+    <% card.with_title { "Recent Products" } %>
+    <% card.with_description { "Last checked merchant product status" } %>
+  <% end %>
+  <% card.with_content do %>
+    <div class="overflow-hidden rounded-md border">
+      <table class="w-full caption-bottom text-sm">
+        <thead class="[&_tr]:border-b">
+          <tr class="border-b bg-muted/50">
+            <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Product</th>
+            <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground hidden sm:table-cell">Offer ID</th>
+            <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">State</th>
+            <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground hidden md:table-cell">Checked</th>
+          </tr>
+        </thead>
+        <tbody class="[&_tr:last-child]:border-0">
+          <% products.each do |product| %>
+            <tr class="border-b transition-colors hover:bg-muted/50">
+              <td class="p-3.5 align-middle font-medium"><%= product.handle.presence || "—" %></td>
+              <td class="p-3.5 align-middle text-muted-foreground hidden sm:table-cell"><%= product.offer_id.presence || "—" %></td>
+              <td class="p-3.5 align-middle">
+                <%= case product.state
+                    when "found"
+                      render Shadcn::BadgeComponent.new(variant: :default) { "Found" }
+                    when "not_found"
+                      render Shadcn::BadgeComponent.new(variant: :destructive) { "Not Found" }
+                    when "error"
+                      render Shadcn::BadgeComponent.new(variant: :secondary) { "Error" }
+                    end %>
+              </td>
+              <td class="p-3.5 align-middle text-right text-muted-foreground hidden md:table-cell">
+                <%= product.checked_at ? product.checked_at.strftime("%b %d %H:%M") : "—" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+  <% card.with_footer do %>
+    <%= link_to "View all products →", products_path, class: "text-sm font-medium text-primary hover:underline" %>
+  <% end %>
+<% end %>
