@@ -4,7 +4,8 @@
       <h1 class="text-3xl font-bold tracking-tight">Merchant Product Status</h1>
       <p class="text-muted-foreground">Cyp source products checked against Google Merchant.</p>
     </div>
-    <%= link_to "Back to Dashboard", root_path, class: "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2" %>
+    <%= link_to "Back to Dashboard", root_path,
+        class: "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2" %>
   </div>
 
   <%= render Shadcn::CardComponent.new do |card| %>
@@ -12,39 +13,41 @@
       <% card.with_title { "Products (#{number_with_delimiter(@products.count)} showing)" } %>
     <% end %>
     <% card.with_content do %>
-      <%= render Shadcn::TableComponent.new do |table| %>
-        <% table.with_header do |header| %>
-          <% header.with_row do |row| %>
-            <% row.with_head { "Product ID" } %>
-            <% row.with_head { "Offer ID" } %>
-            <% row.with_head { "Handle" } %>
-            <% row.with_head { "State" } %>
-            <% row.with_head { "Availability" } %>
-            <% row.with_head { "Checked" } %>
-          <% end %>
-        <% end %>
-        <% table.with_body do |body| %>
-          <% @products.each do |product| %>
-            <% body.with_row do |row| %>
-              <% row.with_cell { product.product_id.to_s } %>
-              <% row.with_cell { product.offer_id.to_s } %>
-              <% row.with_cell { product.handle.to_s } %>
-              <% row.with_cell do %>
-                <%= case product.state
-                    when "found"
-                      render Shadcn::BadgeComponent.new(variant: :default) { "Found" }
-                    when "not_found"
-                      render Shadcn::BadgeComponent.new(variant: :destructive) { "Not Found" }
-                    when "error"
-                      render Shadcn::BadgeComponent.new(variant: :secondary) { "Error" }
-                    end %>
-              <% end %>
-              <% row.with_cell { product.availability.to_s } %>
-              <% row.with_cell { product.checked_at&.strftime("%b %d %H:%M") } %>
+      <div class="rounded-md border">
+        <table class="w-full caption-bottom text-sm">
+          <thead class="[&_tr]:border-b">
+            <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Product ID</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Offer ID</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Handle</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">State</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Availability</th>
+              <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Checked</th>
+            </tr>
+          </thead>
+          <tbody class="[&_tr:last-child]:border-0">
+            <% @products.each do |product| %>
+              <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                <td class="p-4 align-middle font-medium"><%= product.product_id.to_s %></td>
+                <td class="p-4 align-middle"><%= product.offer_id.to_s %></td>
+                <td class="p-4 align-middle"><%= product.handle.to_s %></td>
+                <td class="p-4 align-middle">
+                  <%= case product.state
+                      when "found"
+                        render Shadcn::BadgeComponent.new(variant: :default) { "Found" }
+                      when "not_found"
+                        render Shadcn::BadgeComponent.new(variant: :destructive) { "Not Found" }
+                      when "error"
+                        render Shadcn::BadgeComponent.new(variant: :secondary) { "Error" }
+                      end %>
+                </td>
+                <td class="p-4 align-middle"><%= product.availability.to_s %></td>
+                <td class="p-4 align-middle text-muted-foreground"><%= product.checked_at&.strftime("%b %d %H:%M") %></td>
+              </tr>
             <% end %>
-          <% end %>
-        <% end %>
-      <% end %>
+          </tbody>
+        </table>
+      </div>
     <% end %>
   <% end %>
 </div>

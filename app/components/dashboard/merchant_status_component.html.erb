@@ -1,0 +1,43 @@
+<%= render Shadcn::CardComponent.new do |card| %>
+  <% card.with_header do %>
+    <% card.with_title { "Merchant Status" } %>
+    <% card.with_description { "Cyp source product status" } %>
+  <% end %>
+  <% card.with_content do %>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+          <span class="text-sm font-medium">Found</span>
+        </div>
+        <span class="text-sm font-semibold"><%= number_with_delimiter(found_count) %></span>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-red-500"></span>
+          <span class="text-sm font-medium">Not Found</span>
+        </div>
+        <span class="text-sm font-semibold"><%= number_with_delimiter(not_found_count) %></span>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-yellow-500"></span>
+          <span class="text-sm font-medium">Error</span>
+        </div>
+        <span class="text-sm font-semibold"><%= number_with_delimiter(error_count) %></span>
+      </div>
+
+      <div class="mt-4">
+        <div class="flex items-center justify-between text-xs text-muted-foreground mb-1">
+          <span>Progress</span>
+          <span><%= found_percentage %>% found</span>
+        </div>
+        <div class="h-2 bg-secondary rounded-full overflow-hidden">
+          <div class="h-full bg-primary rounded-full transition-all" style="width: <%= found_percentage %>%"></div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

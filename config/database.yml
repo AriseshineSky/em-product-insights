@@ -19,11 +19,13 @@ development:
     adapter: mysql2
     encoding: utf8mb4
     url: <%= ENV.fetch('SPREE_DATABASE_URL') %>
+    replica: true
   catalog:
     <<: *default
     adapter: postgresql
     encoding: unicode
     url: <%= ENV.fetch('CATALOG_DATABASE_URL') %>
+    replica: true
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
