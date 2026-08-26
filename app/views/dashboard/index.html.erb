@@ -1,0 +1,110 @@
+<div class="space-y-6">
+  <h1 class="text-3xl font-bold tracking-tight">Product Insights Dashboard</h1>
+
+  <p class="text-muted-foreground">Monitor merchant product status, BigQuery issues, and integration health.</p>
+
+  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <%= render Shadcn::CardComponent.new do |card| %>
+      <% card.with_header do %>
+        <% card.with_title { "Cyp Products" } %>
+        <% card.with_description { "Total sourced" } %>
+      <% end %>
+      <% card.with_content do %>
+        <p class="text-2xl font-bold"><%= number_with_delimiter(@cyp_count) %></p>
+      <% end %>
+    <% end %>
+
+    <%= render Shadcn::CardComponent.new do |card| %>
+      <% card.with_header do %>
+        <% card.with_title { "Checked" } %>
+        <% card.with_description { "Merchant status checks" } %>
+      <% end %>
+      <% card.with_content do %>
+        <p class="text-2xl font-bold"><%= number_with_delimiter(@total_checked) %></p>
+      <% end %>
+    <% end %>
+
+    <%= render Shadcn::CardComponent.new do |card| %>
+      <% card.with_header do %>
+        <% card.with_title { "Not Found" } %>
+        <% card.with_description { "Missing from Merchant" } %>
+      <% end %>
+      <% card.with_content do %>
+        <p class="text-2xl font-bold"><%= number_with_delimiter(@merchant_stats.fetch("not_found", 0)) %></p>
+      <% end %>
+    <% end %>
+
+    <%= render Shadcn::CardComponent.new do |card| %>
+      <% card.with_header do %>
+        <% card.with_title { "Last Check" } %>
+        <% card.with_description { "Most recent run" } %>
+      <% end %>
+      <% card.with_content do %>
+        <p class="text-2xl font-bold"><%= @last_checked ? @last_checked.strftime("%b %d %H:%M") : "Never" %></p>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <%= render Shadcn::CardComponent.new do |card| %>
+      <% card.with_header do %>
+        <% card.with_title { "Merchant Status" } %>
+        <% card.with_description { "Cyp source product status" } %>
+      <% end %>
+      <% card.with_content do %>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-sm">Found</span>
+            <%= render Shadcn::BadgeComponent.new(variant: :default) { @merchant_stats.fetch("found", 0).to_s } %>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm">Not Found</span>
+            <%= render Shadcn::BadgeComponent.new(variant: :destructive) { @merchant_stats.fetch("not_found", 0).to_s } %>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm">Error</span>
+            <%= render Shadcn::BadgeComponent.new(variant: :secondary) { @merchant_stats.fetch("error", 0).to_s } %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
+    <%= render Shadcn::CardComponent.new do |card| %>
+      <% card.with_header do %>
+        <% card.with_title { "Integrations" } %>
+        <% card.with_description { "API connection status" } %>
+      <% end %>
+      <% card.with_content do %>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-sm">Google Merchant</span>
+            <%= render Shadcn::BadgeComponent.new(variant: :default) { "Active" } %>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm">BigQuery</span>
+            <%= render Shadcn::BadgeComponent.new(variant: ENV["GOOGLE_CLOUD_PROJECT"].present? ? :default : :secondary) do %>
+              <%= ENV["GOOGLE_CLOUD_PROJECT"].present? ? "Configured" : "Not Configured" %>
+            <% end %>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm">Spree API</span>
+            <%= render Shadcn::BadgeComponent.new(variant: ENV["SPREE_API_ENDPOINT"].present? ? :default : :secondary) do %>
+              <%= ENV["SPREE_API_ENDPOINT"].present? ? "Configured" : "Not Configured" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
+    <%= render Shadcn::CardComponent.new do |card| %>
+      <% card.with_header do %>
+        <% card.with_title { "Quick Actions" } %>
+      <% end %>
+      <% card.with_content do %>
+        <div class="flex flex-col gap-2">
+          <%= link_to "View Products", products_path, class: "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2" %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

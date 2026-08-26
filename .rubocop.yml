@@ -6,3 +6,20 @@ inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 # # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
 # Layout/SpaceInsideArrayLiteralBrackets:
 #   Enabled: false
+
+# Exclude generated shadcn-rails component files (auto-generated, not hand-written)
+Layout/LineLength:
+  Exclude:
+    - "app/components/shadcn/**/*"
+
+Layout/SpaceInsideArrayLiteralBrackets:
+  Exclude:
+    - "app/components/shadcn/**/*"
+
+Metrics/MethodLength:
+  Exclude:
+    - "app/components/shadcn/**/*"
+
+Metrics/AbcSize:
+  Exclude:
+    - "app/components/shadcn/**/*"

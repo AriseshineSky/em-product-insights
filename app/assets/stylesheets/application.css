@@ -8,3 +8,8 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/*
+ *= require shadcn/base
+ *= require shadcn/components
+ */
