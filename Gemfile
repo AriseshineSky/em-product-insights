@@ -74,3 +74,5 @@ end
 gem "google-shopping-merchant-products-v1", "~> 0.9.0"
 
 gem "packwerk", "~> 3.3"
+
+gem "google-cloud-bigquery", "~> 1.64"

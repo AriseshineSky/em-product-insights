@@ -1,0 +1,7 @@
+# Generic Google BigQuery integration adapter.
+# ".": depends on the shared root package (stdlib, namespace root).
+
+enforce_dependencies: true
+
+dependencies:
+  - "."

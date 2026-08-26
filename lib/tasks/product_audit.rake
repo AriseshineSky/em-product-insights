@@ -17,4 +17,19 @@ namespace :product_audit do
             row.price_micros.to_s, row.title || row.error_message ].join("\t")
     end
   end
+
+  desc "List offer_ids with a merchant issue code via BigQuery (dry-run cost estimate, then enforced max bytes)"
+  task :merchant_issues, %i[issue_code limit] => :environment do |_task, args|
+    issue_code = args.fetch(:issue_code, ProductAudit::MerchantIssues::DEFAULT_ISSUE_CODE)
+    issues = ProductAudit::MerchantIssues.new
+    est = issues.estimate(issue_code: issue_code)
+    puts "issue=#{issue_code} estimate bytes=#{est[:bytes]} " \
+         "gib=#{est[:gib].round(3)} estimated_cost=$#{est[:estimated_cost].round(4)} " \
+         "max_bytes_billed=#{est[:maximum_bytes_billed]}"
+
+    ids = issues.offer_ids(issue_code: issue_code, limit: args[:limit]&.to_i)
+    puts "count: #{ids.length}"
+    ids.first(50).each { |id| puts id }
+    puts "... (#{ids.length - 50} more)" if ids.length > 50
+  end
 end

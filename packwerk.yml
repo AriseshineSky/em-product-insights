@@ -14,6 +14,7 @@ exclude:
 package_paths:
   - "."
   - "app/models/product_audit/"
+  - "lib/bigquery/"
   - "lib/google_merchant/"
   - "lib/product_audit/"
   - "lib/spree_api/"

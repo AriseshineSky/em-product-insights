@@ -1,9 +1,11 @@
 # Bounded context for product sourcing audits (e.g. merchant status checks).
 # ".": depends on the shared root package (Catalog models, ActiveRecord).
+# "lib/bigquery": BigQuery adapter for merchant issue analysis.
 # "lib/google_merchant": the merchant integration adapter.
 
 enforce_dependencies: true
 
 dependencies:
   - "."
+  - "lib/bigquery"
   - "lib/google_merchant"
