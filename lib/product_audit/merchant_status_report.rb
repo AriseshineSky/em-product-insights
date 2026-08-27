@@ -5,7 +5,7 @@ module ProductAudit
     Result = Struct.new(:source, :total, :found, :not_found, :errors, :db_errors,
                         keyword_init: true) do
       def summary
-        { source: source, total: total, found: found, not_found: not_found, errors: errors.length }
+        { source: source, total: total, found: found, not_found: not_found, errors: errors }
       end
     end
 

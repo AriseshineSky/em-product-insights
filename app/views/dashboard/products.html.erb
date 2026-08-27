@@ -1,9 +1,21 @@
 <% content_for :page_title, "Products" %>
 
 <div class="space-y-6">
-  <div>
-    <h1 class="text-2xl font-semibold tracking-tight">Merchant Product Status</h1>
-    <p class="text-sm text-muted-foreground">Cyp source products checked against Google Merchant (<%= number_with_delimiter(@products.count) %> showing).</p>
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Merchant Product Status</h1>
+      <p class="text-sm text-muted-foreground">
+        <%= @selected_source || "All sources" %>
+        products checked against Google Merchant (<%= number_with_delimiter(@products.count) %> showing).
+      </p>
+    </div>
+
+    <%= form_with url: products_path, method: :get, class: "flex items-center gap-2" do |form| %>
+      <%= form.select :source,
+            options_for_select([["All sources", ""]] + @sources.map { |s| [s.name, s.name] }, @selected_source),
+            {}, class: "flex h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs outline-none transition-colors focus-visible:ring-1 focus-visible:ring-ring" %>
+      <%= form.submit "Filter", class: "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs hover:bg-primary/90" %>
+    <% end %>
   </div>
 
   <%= render Shadcn::CardComponent.new do |card| %>
@@ -12,6 +24,7 @@
         <table class="w-full caption-bottom text-sm">
           <thead class="[&_tr]:border-b">
             <tr class="border-b bg-muted/50">
+              <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Source</th>
               <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Product ID</th>
               <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Offer ID</th>
               <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground hidden md:table-cell">Handle</th>
@@ -23,6 +36,9 @@
           <tbody class="[&_tr:last-child]:border-0">
             <% @products.each do |product| %>
               <tr class="border-b transition-colors hover:bg-muted/50">
+                <td class="p-3.5 align-middle">
+                  <%= render Shadcn::BadgeComponent.new(variant: :secondary) { product.source } %>
+                </td>
                 <td class="p-3.5 align-middle font-medium"><%= product.product_id.to_s %></td>
                 <td class="p-3.5 align-middle text-muted-foreground"><%= product.offer_id.to_s %></td>
                 <td class="p-3.5 align-middle text-muted-foreground hidden md:table-cell"><%= product.handle.to_s %></td>

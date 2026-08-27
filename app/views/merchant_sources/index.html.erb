@@ -1,0 +1,79 @@
+<% content_for :page_title, "Sources" %>
+
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight">Merchant Sources</h1>
+    <p class="text-sm text-muted-foreground">Configure which catalog sources appear in the merchant product statistics.</p>
+  </div>
+
+  <% if notice %>
+    <div class="rounded-lg border border-border bg-background px-4 py-3 text-sm"><%= notice %></div>
+  <% end %>
+  <% if alert %>
+    <div class="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"><%= alert %></div>
+  <% end %>
+
+  <%= render Shadcn::CardComponent.new do |card| %>
+    <% card.with_header do %>
+      <h3 class="font-semibold leading-none tracking-tight">Tracked Sources</h3>
+    <% end %>
+    <% card.with_content do %>
+      <% if @sources.any? %>
+        <div class="overflow-hidden rounded-md border">
+          <table class="w-full caption-bottom text-sm">
+            <thead class="[&_tr]:border-b">
+              <tr class="border-b bg-muted/50">
+                <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Source</th>
+                <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Catalog Products</th>
+                <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground hidden md:table-cell">Checks Recorded</th>
+                <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground"></th>
+              </tr>
+            </thead>
+            <tbody class="[&_tr:last-child]:border-0">
+              <% @sources.each do |source| %>
+                <tr class="border-b transition-colors hover:bg-muted/50">
+                  <td class="p-3.5 align-middle font-medium">
+                    <%= link_to source.name, products_path(source: source.name), class: "text-primary hover:underline" %>
+                  </td>
+                  <td class="p-3.5 align-middle text-muted-foreground">
+                    <%= number_with_delimiter(Catalog::ProductSource.where(source: source.name).count) %>
+                  </td>
+                  <td class="p-3.5 align-middle text-muted-foreground hidden md:table-cell">
+                    <%= number_with_delimiter(ProductAudit::MerchantProductCheck.where(source: source.name).count) %>
+                  </td>
+                  <td class="p-3.5 align-middle text-right">
+                    <%= button_to "Remove", merchant_source_path(source), method: :delete,
+                                  class: "inline-flex items-center justify-center rounded-md border border-input bg-background px-3 h-8 text-xs font-medium text-destructive hover:bg-accent hover:text-accent-foreground" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-sm text-muted-foreground">No sources tracked yet. Add one below.</p>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= render Shadcn::CardComponent.new do |card| %>
+    <% card.with_header do %>
+      <h3 class="font-semibold leading-none tracking-tight">Add Source</h3>
+      <% card.with_description { "Pick a source from the catalog to start tracking its merchant product status." } %>
+    <% end %>
+    <% card.with_content do %>
+      <% if @available_sources.any? %>
+        <%= form_with model: MerchantSource.new, class: "flex flex-col gap-4 sm:flex-row sm:items-end" do |form| %>
+          <div class="flex-1">
+            <%= form.label :name, class: "mb-2 block text-sm font-medium" %>
+            <%= form.select :name, @available_sources, { include_blank: "Select a source..." },
+                  class: "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs outline-none transition-colors focus-visible:ring-1 focus-visible:ring-ring" %>
+          </div>
+          <%= form.submit "Add Source", class: "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-xs hover:bg-primary/90" %>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-muted-foreground">All catalog sources are already tracked.</p>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_24_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_27_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,5 +32,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_24_000001) do
     t.index ["checked_at"], name: "index_merchant_product_checks_on_checked_at"
     t.index ["product_id", "source"], name: "index_merchant_product_checks_on_product_id_and_source", unique: true
     t.index ["source"], name: "index_merchant_product_checks_on_source"
+  end
+
+  create_table "merchant_sources", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_merchant_sources_on_name", unique: true
   end
 end

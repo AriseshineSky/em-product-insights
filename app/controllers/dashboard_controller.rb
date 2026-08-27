@@ -2,15 +2,26 @@ class DashboardController < ApplicationController
   layout "dashboard"
 
   def index
-    @cyp_count = Catalog::ProductSource.where(source: "Cyp").count
-    @merchant_stats = ProductAudit::MerchantProductCheck.group(:state).count
-    @total_checked = ProductAudit::MerchantProductCheck.count
-    @last_checked = ProductAudit::MerchantProductCheck.maximum(:checked_at)
-    @recent_products = ProductAudit::MerchantProductCheck.order(checked_at: :desc).limit(6)
+    @source_stats = MerchantSource.order(:name).map do |merchant_source|
+      source = merchant_source.name
+      checks = ProductAudit::MerchantProductCheck.where(source: source)
+      {
+        merchant_source: merchant_source,
+        sourced_count: Catalog::ProductSource.where(source: source).count,
+        checked_count: checks.count,
+        state_counts: checks.group(:state).count,
+        last_checked: checks.maximum(:checked_at)
+      }
+    end
+    @recent_products = ProductAudit::MerchantProductCheck.where(source: MerchantSource.pluck(:name))
+      .order(checked_at: :desc).limit(6)
   end
 
   def products
-    @products = ProductAudit::MerchantProductCheck.where(source: "Cyp")
-      .order(checked_at: :desc).limit(50)
+    @sources = MerchantSource.order(:name)
+    @selected_source = params[:source].presence
+    scope = ProductAudit::MerchantProductCheck
+    scope = scope.where(source: @selected_source) if @selected_source
+    @products = scope.order(checked_at: :desc).limit(50)
   end
 end

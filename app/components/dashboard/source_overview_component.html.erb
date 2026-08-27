@@ -1,0 +1,56 @@
+<%= render Shadcn::CardComponent.new(class: "h-full") do |card| %>
+  <% card.with_header do %>
+    <div class="flex items-center justify-between gap-4">
+      <h3 class="text-lg font-semibold leading-none tracking-tight"><%= merchant_source.name %></h3>
+      <%= link_to "Products →", products_path(source: merchant_source.name), class: "text-sm font-medium text-primary hover:underline" %>
+    </div>
+  <% end %>
+  <% card.with_content do %>
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div>
+        <p class="text-xs font-medium uppercase tracking-wider text-muted-foreground">Sourced</p>
+        <p class="mt-1 text-2xl font-bold leading-none"><%= number_with_delimiter(sourced_count) %></p>
+      </div>
+      <div>
+        <p class="text-xs font-medium uppercase tracking-wider text-muted-foreground">Checked</p>
+        <p class="mt-1 text-2xl font-bold leading-none"><%= number_with_delimiter(checked_count) %></p>
+      </div>
+      <div>
+        <p class="text-xs font-medium uppercase tracking-wider text-muted-foreground">Not Found</p>
+        <p class="mt-1 text-2xl font-bold leading-none text-red-600"><%= number_with_delimiter(not_found_count) %></p>
+      </div>
+      <div>
+        <p class="text-xs font-medium uppercase tracking-wider text-muted-foreground">Last Check</p>
+        <p class="mt-1 text-2xl font-bold leading-none">
+          <%= last_checked ? last_checked.strftime("%b %d") : "Never" %>
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-6 flex items-start gap-6">
+      <div class="relative h-32 w-32 shrink-0 rounded-full" style="<%= donut_style %>">
+        <div class="absolute inset-4 flex items-center justify-center rounded-full bg-card">
+          <div class="text-center">
+            <p class="text-xl font-bold leading-none"><%= number_with_delimiter(checked_count) %></p>
+            <p class="mt-1 text-xs text-muted-foreground">checked</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-1 space-y-2.5">
+        <% legend.each do |item| %>
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+              <span class="inline-block h-2.5 w-2.5 rounded-full" style="background-color: <%= item[:color] %>"></span>
+              <span class="text-sm"><%= item[:label] %></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-semibold"><%= number_with_delimiter(item[:count]) %></span>
+              <span class="w-12 text-right text-xs text-muted-foreground"><%= item[:percent] %>%</span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

@@ -1,63 +1,54 @@
 <% content_for :page_title, "Overview" %>
 
 <div class="space-y-6">
-  <div>
-    <h1 class="text-2xl font-semibold tracking-tight">Overview</h1>
-    <p class="text-sm text-muted-foreground">Merchant product status, integrations and recent activity.</p>
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Overview</h1>
+      <p class="text-sm text-muted-foreground">Merchant product status for tracked catalog sources.</p>
+    </div>
+    <%= link_to "Manage Sources", merchant_sources_path, class: "text-sm font-medium text-primary hover:underline" %>
   </div>
 
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-    <%= render Dashboard::MetricCardComponent.new(
-      title: "Cyp Products",
-      description: "Total sourced",
-      value: number_with_delimiter(@cyp_count)
-    ) %>
-
-    <%= render Dashboard::MetricCardComponent.new(
-      title: "Checked",
-      description: "Status checks completed",
-      value: number_with_delimiter(@total_checked)
-    ) %>
-
-    <%= render Dashboard::MetricCardComponent.new(
-      title: "Not Found",
-      description: "Missing from Merchant",
-      value: number_with_delimiter(@merchant_stats.fetch("not_found", 0))
-    ) %>
-
-    <%= render Dashboard::MetricCardComponent.new(
-      title: "Last Check",
-      description: "Most recent run",
-      value: @last_checked ? @last_checked.strftime("%H:%M") : "Never"
-    ) %>
+  <div class="grid gap-6 lg:grid-cols-2">
+    <% if @source_stats.any? %>
+      <% @source_stats.each do |stats| %>
+        <%= render Dashboard::SourceOverviewComponent.new(
+          merchant_source: stats[:merchant_source],
+          sourced_count: stats[:sourced_count],
+          checked_count: stats[:checked_count],
+          state_counts: stats[:state_counts],
+          last_checked: stats[:last_checked]
+        ) %>
+      <% end %>
+    <% else %>
+      <%= render Shadcn::CardComponent.new(class: "lg:col-span-2") do |card| %>
+        <% card.with_content do %>
+          <p class="text-sm text-muted-foreground">
+            No sources tracked yet.
+            <%= link_to "Add a source", merchant_sources_path, class: "font-medium text-primary hover:underline" %>
+            to see merchant product statistics here.
+          </p>
+        <% end %>
+      <% end %>
+    <% end %>
   </div>
 
   <div class="grid gap-6 lg:grid-cols-3">
-    <div class="lg:col-span-1">
-      <%= render Dashboard::MerchantStatusComponent.new(
-        stats: @merchant_stats,
-        total: @total_checked
-      ) %>
-    </div>
-
     <div class="lg:col-span-2">
       <%= render Dashboard::RecentProductsComponent.new(products: @recent_products) %>
     </div>
-  </div>
 
-  <div class="grid gap-6 lg:grid-cols-3">
     <div class="lg:col-span-1">
       <%= render Dashboard::IntegrationStatusComponent.new(
         integrations: Dashboard::IntegrationStatusComponent.default_integrations
       ) %>
     </div>
-
-    <div class="lg:col-span-2">
-      <%= render Dashboard::QuickActionsComponent.new(actions: [
-        { path: products_path, label: "View Products", variant: :primary },
-        { path: root_path, label: "Merchant Issues (BigQuery)", variant: :outline },
-        { path: root_path, label: "Spree API Commands", variant: :outline }
-      ]) %>
-    </div>
   </div>
+
+  <%= render Dashboard::QuickActionsComponent.new(actions: [
+    { path: products_path, label: "View Products", variant: :primary },
+    { path: merchant_sources_path, label: "Manage Sources", variant: :outline },
+    { path: root_path, label: "Merchant Issues (BigQuery)", variant: :outline },
+    { path: root_path, label: "Spree API Commands", variant: :outline }
+  ]) %>
 </div>
