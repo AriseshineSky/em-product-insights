@@ -26,14 +26,18 @@ module ProductAudit
       scope = Catalog::ProductSource.where(source: source).order(:product_id)
       scope = scope.limit(limit) if limit
 
-      scope.find_each do |product_source|
-        determined = check_product(product_source)
-        counted[determined[:state]] += 1
-        begin
-          persist(product_source, determined)
-          checked_rows += 1
-        rescue StandardError => e
-          db_errors << { product_id: product_source.product_id, error: e.message }
+      scope.find_in_batches do |batch|
+        offer_ids = MerchantOfferIds.new.build_by_product_id(batch.map(&:product_id))
+
+        batch.each do |product_source|
+          determined = check_product(product_source, offer_ids[product_source.product_id])
+          counted[determined[:state]] += 1
+          begin
+            persist(product_source, determined)
+            checked_rows += 1
+          rescue StandardError => e
+            db_errors << { product_id: product_source.product_id, error: e.message }
+          end
         end
       end
 
@@ -49,18 +53,17 @@ module ProductAudit
 
     private
 
-    def check_product(product_source)
-      [ product_source.handle, product_source.source_product_id ].compact.each do |offer_id|
-        begin
-          product = merchant_service.find_product(offer_id: offer_id)
-          return found_result(offer_id, product)
-        rescue GoogleMerchant::NotFoundError
-          next
-        rescue GoogleMerchant::Error => e
-          return { state: "error", offer_id: offer_id, error_message: e.message }
-        end
+    def check_product(product_source, offer_id)
+      if offer_id.to_s.empty?
+        return { state: "not_found", offer_id: product_source.handle }
       end
-      { state: "not_found", offer_id: product_source.handle }
+
+      product = merchant_service.find_product(offer_id: offer_id)
+      found_result(offer_id, product)
+    rescue GoogleMerchant::NotFoundError
+      { state: "not_found", offer_id: offer_id }
+    rescue GoogleMerchant::Error => e
+      { state: "error", offer_id: offer_id, error_message: e.message }
     end
 
     def found_result(offer_id, product)
