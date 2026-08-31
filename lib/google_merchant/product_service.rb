@@ -12,13 +12,7 @@ module GoogleMerchant
     def each_product(page_size: 250)
       return enum_for(:each_product, page_size: page_size) unless block_given?
 
-      page_token = nil
-      loop do
-        response = client.list_products(page_size: page_size, page_token: page_token)
-        response.products.each { |product| yield product }
-        page_token = response.next_page_token
-        break if page_token.to_s.empty?
-      end
+      client.list_products(page_size: page_size).each { |product| yield product }
     end
 
     def find_product(name: nil, offer_id: nil, content_language: config.content_language,

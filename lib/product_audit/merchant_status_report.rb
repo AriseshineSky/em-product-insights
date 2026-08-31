@@ -55,7 +55,7 @@ module ProductAudit
 
     def check_product(product_source, offer_id)
       if offer_id.to_s.empty?
-        return { state: "not_found", offer_id: product_source.handle }
+        return { state: "not_found", offer_id: nil }
       end
 
       product = merchant_service.find_product(offer_id: offer_id)

@@ -4,3 +4,4 @@ end
 require_relative "product_audit/merchant_offer_ids"
 require_relative "product_audit/merchant_status_report"
 require_relative "product_audit/merchant_issues"
+require_relative "product_audit/merchant_product_cleanup"

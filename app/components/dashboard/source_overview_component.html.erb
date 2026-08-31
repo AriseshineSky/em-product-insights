@@ -17,7 +17,10 @@
       </div>
       <div>
         <p class="text-xs font-medium uppercase tracking-wider text-muted-foreground">Not Found</p>
-        <p class="mt-1 text-2xl font-bold leading-none text-red-600"><%= number_with_delimiter(not_found_count) %></p>
+        <%= link_to products_path(source: merchant_source.name, state: "not_found"),
+              class: "mt-1 inline-block text-2xl font-bold leading-none text-red-600 hover:underline" do %>
+          <%= number_with_delimiter(not_found_count) %>
+        <% end %>
       </div>
       <div>
         <p class="text-xs font-medium uppercase tracking-wider text-muted-foreground">Last Check</p>

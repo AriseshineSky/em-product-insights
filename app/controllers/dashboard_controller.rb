@@ -20,8 +20,10 @@ class DashboardController < ApplicationController
   def products
     @sources = MerchantSource.order(:name)
     @selected_source = params[:source].presence
+    @selected_state = params[:state].presence
     scope = ProductAudit::MerchantProductCheck
     scope = scope.where(source: @selected_source) if @selected_source
+    scope = scope.where(state: @selected_state) if @selected_state
     @products = scope.order(checked_at: :desc).limit(50)
   end
 end
