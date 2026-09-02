@@ -66,7 +66,8 @@ namespace :product_audit do
     issue_code = args.fetch(:issue_code, ProductAudit::MerchantIssues::DEFAULT_ISSUE_CODE)
     force = args[:force] == "1"
     concurrency = args[:concurrency]&.to_i || ProductAudit::MerchantProductCleanup::DEFAULT_CONCURRENCY
-    max_bytes = ProductAudit::ByteSize.parse(args[:max_bytes])
+    max_bytes = args[:max_bytes].to_s.empty? ? BigQuery.config.max_estimated_bytes
+                                             : ProductAudit::ByteSize.parse(args[:max_bytes])
     cleanup = ProductAudit::MerchantProductCleanup.new(issue_code: issue_code,
                                                        concurrency: concurrency,
                                                        max_estimated_bytes: max_bytes)
