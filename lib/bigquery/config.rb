@@ -1,11 +1,12 @@
 module BigQuery
   class Config
     DEFAULT_MAXIMUM_BYTES_BILLED = 10 * 1024**3
+    DEFAULT_MAX_ESTIMATED_BYTES = 1 * 1024**3
     DEFAULT_PRICE_PER_TIB = 6.25
     DEFAULT_DATASET = "google_merchant_center".freeze
 
     attr_reader :project, :service_account_json, :merchant_id, :dataset,
-                :maximum_bytes_billed, :price_per_tib
+                :maximum_bytes_billed, :max_estimated_bytes, :price_per_tib
 
     def initialize(env: ENV)
       @project = env["GOOGLE_CLOUD_PROJECT"] || env["GCS_PROJECT_ID"]
@@ -14,6 +15,8 @@ module BigQuery
       @dataset = env.fetch("GOOGLE_BIGQUERY_DATASET", DEFAULT_DATASET)
       @maximum_bytes_billed = (env["GOOGLE_BIGQUERY_MAXIMUM_BYTES_BILLED"] ||
                                DEFAULT_MAXIMUM_BYTES_BILLED).to_i
+      @max_estimated_bytes = (env["GOOGLE_BIGQUERY_MAX_ESTIMATED_BYTES"] ||
+                              DEFAULT_MAX_ESTIMATED_BYTES).to_i
       @price_per_tib = (env["GOOGLE_BIGQUERY_PRICE_PER_TIB"] || DEFAULT_PRICE_PER_TIB).to_f
     end
 

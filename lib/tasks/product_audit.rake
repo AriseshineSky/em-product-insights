@@ -61,21 +61,27 @@ namespace :product_audit do
     puts "... (#{ids.length - 50} more)" if ids.length > 50
   end
 
-  desc "Delete merchant products by BigQuery issue code. Auto-runs only when the dry-run estimate is under 1GiB; pass force=1 after manual review above that"
-  task :clear_merchant_products, %i[issue_code limit force] => :environment do |_task, args|
+  desc "Delete merchant products by BigQuery issue code. Auto-runs only when the dry-run estimate is under the max_bytes threshold (default 1GiB, use e.g. max_bytes=100M); pass force=1 after manual review above that. concurrency sets the parallel delete workers (default 8)"
+  task :clear_merchant_products, %i[issue_code limit force concurrency max_bytes] => :environment do |_task, args|
     issue_code = args.fetch(:issue_code, ProductAudit::MerchantIssues::DEFAULT_ISSUE_CODE)
     force = args[:force] == "1"
-    result = ProductAudit::MerchantProductCleanup.new(issue_code: issue_code)
-      .run(limit: args[:limit]&.to_i, force: force)
+    concurrency = args[:concurrency]&.to_i || ProductAudit::MerchantProductCleanup::DEFAULT_CONCURRENCY
+    max_bytes = ProductAudit::ByteSize.parse(args[:max_bytes])
+    cleanup = ProductAudit::MerchantProductCleanup.new(issue_code: issue_code,
+                                                       concurrency: concurrency,
+                                                       max_estimated_bytes: max_bytes)
+    result = cleanup.run(limit: args[:limit]&.to_i, force: force)
 
     if result.needs_review?
-      puts "issue=#{result.issue_code} estimate=%d bytes (%.3f GiB) exceeds the auto-run threshold" \
-           % [ result.estimated_bytes, result.estimated_bytes.to_f / (1024**3) ]
+      puts "issue=#{result.issue_code} estimate=%d bytes (%.3f GiB) exceeds the auto-run threshold (max_bytes=%d)" \
+           % [ result.estimated_bytes, result.estimated_bytes.to_f / (1024**3), cleanup.max_estimated_bytes ]
       puts "review required: no products were deleted. Rerun with force=1 only after inspecting the query and estimates."
     else
       puts "issue=#{result.issue_code} estimate_bytes=#{result.estimated_bytes} " \
+           "max_bytes=#{cleanup.max_estimated_bytes} " \
            "offers=#{result.offer_count} deleted=#{result.deleted_count} " \
-           "already_gone=#{result.already_gone_count} errors=#{result.errors.size}"
+           "already_gone=#{result.already_gone_count} errors=#{result.errors.size} " \
+           "concurrency=#{result.concurrency}"
       result.errors.first(20).each { |e| puts "  delete error offer=#{e[:offer_id]}: #{e[:error]}" }
     end
   end
