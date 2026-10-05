@@ -77,7 +77,7 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "google-shopping-merchant-products-v1", "~> 0.9.0"
+gem "google-shopping-merchant-products-v1", "~> 0.10.0"
 
 gem "packwerk", "~> 3.3"
 
